@@ -4,7 +4,6 @@ using CSV
 using MAT
 using DataFrames
 using SparseArrays
-
 using JuMP, Gurobi, SCIP
 using Graphs
 
@@ -48,7 +47,7 @@ println("The number of points:", points, " The method: ", method, " the PWL/PWR 
 # thetas = inverseKinematics2DNLP(arms, angleRanges, targetPosition, targetAngle, initAngle=initAngle,
 #         beta=beta, timeLimit=timeLimit)
 
-thetas = inverseKinematics2D(arms, angleRanges, targetPosition, targetAngle, initAngle=initAngle,
+m, thetas = inverseKinematics2D(arms, angleRanges, targetPosition, targetAngle, initAngle=initAngle,
         beta=beta, points=points, method=method, pwl_method=pwl_method, times=times, timeLimit=timeLimit)
 
 locations = forward2D(thetas, arms, initAngle)

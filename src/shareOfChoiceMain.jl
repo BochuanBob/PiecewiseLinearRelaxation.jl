@@ -19,7 +19,7 @@ include("relaxation.jl")
 include("shareOfChoiceFunctions.jl")
 
 v, S, eta, C = 4, 6, 10, 0.2
- Random.seed!(2022)
+Random.seed!(2022)
 betas = rand(Float64, (v, S, eta)) * 10 .- 5.0
 Us = rand(Float64, v) * 10
 lambdas = rand(Float64, v)

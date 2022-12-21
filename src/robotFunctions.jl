@@ -40,6 +40,10 @@ function inverseKinematics2DNLP(arms::Vector{Float64},
     cumAngleRanges = calculateRanges(angleRanges)
     m = direct_model(SCIP.Optimizer())
     theta = @variable(m, [1:aLen])
+
+    @constraint(m, [i=1:aLen], theta[i] >= angleRanges[i][1])
+    @constraint(m, [i=1:aLen], theta[i] <= angleRanges[i][2])
+
     cumTheta = [sum(theta[i] for i in 1:j) for j in 1:aLen]
     xPos, yPos = 0.0, 0.0
     sinVars = Vector{VariableRef}(undef, aLen)
@@ -70,7 +74,7 @@ function inverseKinematics2DNLP(arms::Vector{Float64},
         println("Actual Sin: ", sin(value(cumTheta[i])) , " MIP Sin: ", value(sinVars[i]))
         println("Actual Cos: ", cos(value(cumTheta[i])) , " MIP Cos: ", value(cosVars[i]))
     end
-    return value.(theta)
+    return m, value.(theta)
 end
 
 function inverseKinematics2D(arms::Vector{Float64},
@@ -94,6 +98,10 @@ function inverseKinematics2D(arms::Vector{Float64},
     set_optimizer_attribute(m, "Threads", 4)
     set_optimizer_attribute(m, "TimeLimit", timeLimit)
     theta = @variable(m, [1:aLen])
+
+    @constraint(m, [i=1:aLen], theta[i] >= angleRanges[i][1])
+    @constraint(m, [i=1:aLen], theta[i] <= angleRanges[i][2])
+
     cumTheta = [sum(theta[i] for i in 1:j) for j in 1:aLen]
     xPos, yPos = 0.0, 0.0
     sinVars = Vector{VariableRef}(undef, aLen)
@@ -134,7 +142,7 @@ function inverseKinematics2D(arms::Vector{Float64},
         println("Actual Sin: ", sin(value(cumTheta[i])) , " MIP Sin: ", value(sinVars[i]))
         println("Actual Cos: ", cos(value(cumTheta[i])) , " MIP Cos: ", value(cosVars[i]))
     end
-    return value.(theta)
+    return m, value.(theta)
 end
 
 function getSinBreaks(lower::Float64, upper::Float64)
