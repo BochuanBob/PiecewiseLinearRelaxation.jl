@@ -18,7 +18,7 @@ using Main.PiecewiseLinearOpt
 include("relaxation.jl")
 include("shareOfChoiceFunctions.jl")
 
-v, S, eta, C = 4, 6, 10, 0.2
+v, S, eta, C = 10, 6, 15, 0.2
 Random.seed!(2022)
 betas = rand(Float64, (v, S, eta)) * 10 .- 5.0
 Us = rand(Float64, v) * 10
@@ -26,13 +26,13 @@ lambdas = rand(Float64, v)
 
 # :pwl, :pwr, :pwlMerge
 method = :pwlMerge
-points = 100
+points = 50
 times=3
 # PWL: :LogarithmicIB, :ZigZag, :ZigZagInteger, :GeneralizedCelaya,
 # :SOS2, :Incremental, :CC, :DisaggLogarithmic, :MC, :DLog
 # PWR: :general, :BRGC, :balancedCode, :biclique
-pwl_method = :Incremental
-timeLimit = 60.0
+pwl_method = :SOS2
+timeLimit = 1200.0
 
 println("The number of points:", points, " The method: ", method, " the PWL/PWR Approach: ", pwl_method)
 

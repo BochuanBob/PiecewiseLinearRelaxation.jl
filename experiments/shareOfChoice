@@ -4,22 +4,22 @@
 # points: for the number of polyhderon relaxations
 # times: 2^times-1 is the number of extra extreme points in relaxations
 # samples: the number of random samples
-timeLimit=600;
-samples=5;
-output=../results/robot_results_1/
+timeLimit=1800;
+samples=20;
+output=../results/shareOfChoice_results_1/
 j=1
 while [ -d $output ]
     do
     j=$(( $j + 1 ));
-    output=../results/robot_results_$j/;
+    output=../results/shareOfChoice_results_$j/;
 done
 
 mkdir -p $output
 
-for points in 50 100 200 500
+for points in 50
     do
     for times in 1 2 3
         do
-        nohup julia robot.jl $points $times $samples $timeLimit $output >> ../results/out.txt;
+        nohup julia shareOfChoice.jl $points $times $samples $timeLimit $output >> ../results/out_share.txt;
     done
 done &

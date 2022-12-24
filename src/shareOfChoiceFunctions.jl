@@ -43,6 +43,20 @@ function shareOfChoise(lambdas::Vector{Float64}, betas::Array{Float64, 3},
                             C * sum(lambdas[i] * pBar[i] for i in 1:v))
     @objective(m, Max, sum(lambdas .* pBar))
     optimize!(m)
+    return m
+end
+
+function removeClosePoints(xSort::Vector{Float64}; threshold=1e-8)
+    if (length(xSort) == 0)
+        return xSort
+    end
+    res = Vector{Float64}([xSort[1]])
+    for i in 2:length(xSort)
+        if abs(xSort[i] - res[length(res)]) > threshold
+            append!(res, xSort[i])
+        end
+    end
+    return res
 end
 
 function calculateRanges(coef::Vector{Float64}, lower::Vector{Float64}, upper::Vector{Float64})

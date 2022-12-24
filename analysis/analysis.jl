@@ -3,9 +3,16 @@ using DataFrames
 using StatsBase
 
 
-const timeLimit = 600
-fd = "../results/robot_results_1/"
+# const timeLimit = 600
+# expName = "robot_results_2"
+
+const timeLimit = 1800
+expName = "shareOfChoice_results_1"
+fd = "../results/$(expName)/"
 folders = readdir("$(fd)")
+
+expOut, methodOut, approachOut, winOut,
+        failOut, meanOut, stdOut = [], [], [], [], [], [], []
 
 for folder in folders
     folderName = string(fd, folder, "/")
@@ -47,12 +54,24 @@ for folder in folders
     for method in methodList
         for approach in pwlMethods[method]
             println("==============================")
-            println(folderName)
+            println(folder)
             println("Method ", method, " Approach ", approach)
             d = result[(method, approach)]
             println("Win ", d["win"], " Fail ", d["fail"])
             println("Mean ", mean(d["arr"]), " Std ", StatsBase.std(d["arr"]))
             println("==============================")
+
+            push!(expOut, folder)
+            push!(methodOut, method)
+            push!(approachOut, approach)
+            append!(winOut, d["win"])
+            append!(failOut, d["fail"])
+            append!(meanOut, mean(d["arr"]))
+            append!(stdOut, StatsBase.std(d["arr"]))
         end
     end
 end
+
+df = DataFrame(Experiments=expOut, Methods=methodOut, Approaches=approachOut,
+                Wins=winOut, Fails=failOut, Means=meanOut, Stds=stdOut)
+CSV.write(string(expName, ".csv"), df)
