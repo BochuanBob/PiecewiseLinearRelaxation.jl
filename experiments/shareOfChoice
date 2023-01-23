@@ -18,7 +18,7 @@ mkdir -p $output
 
 for points in 50
     do
-    for times in 1 2 3
+    for times in 1 2 4
         do
         nohup julia shareOfChoice.jl $points $times $samples $timeLimit $output >> ../results/out_share.txt;
     done

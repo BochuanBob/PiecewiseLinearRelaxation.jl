@@ -8,7 +8,7 @@ function shareOfChoise(lambdas::Vector{Float64}, betas::Array{Float64, 3},
     v, S, eta = size(betas)
     m = direct_model(Gurobi.Optimizer())
     set_optimizer_attribute(m, "OutputFlag", 1)
-    set_optimizer_attribute(m, "PreCrush", 1)
+    # set_optimizer_attribute(m, "PreCrush", 1)
     set_optimizer_attribute(m, "Threads", 4)
     set_optimizer_attribute(m, "TimeLimit", timeLimit)
 

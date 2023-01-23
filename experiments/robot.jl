@@ -58,7 +58,7 @@ function main()
             for pwl_method in pwlMethods[method]
                 Random.seed!(seed)
                 targetPosition = (Random.rand(Float64)*10, Random.rand(Float64)*10)
-                targetAngle = Random.rand(Float64) * 2 * pi - pi
+                targetAngle = Random.rand(Float64) * 2 * pi + initAngle - pi
                 println(" The method: ", method, " the PWL/PWR Approach: ", pwl_method)
                 println("The number of points: ", points,
                         "The number of extra points in each relaxation:", times)
@@ -66,6 +66,7 @@ function main()
                 m, thetas = inverseKinematics2D(arms, angleRanges, targetPosition, targetAngle, initAngle=initAngle,
                         beta=beta, points=points, method=method, pwl_method=pwl_method, times=times, timeLimit=timeLimit)
                 locations, actualAng = forward2D(thetas, arms, initAngle)
+                actualAng += initAngle
                 lLen = length(locations)
                 actualPos = locations[lLen]
 

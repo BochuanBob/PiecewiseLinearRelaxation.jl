@@ -33,15 +33,15 @@ angleRanges = [(-0.5 * pi, 0.5 * pi), (-0.25 * pi, 0.25 * pi), (-0.25 * pi, 0.25
 targetPosition = (3.4, 5.2)# (3.5, 6.0)
 targetAngle = pi/2
 beta = 0.1
-points = 500
+points = 200
 # :pwl, :pwr, :pwlMerge
-method = :pwlMerge
+method = :pwr
 initAngle = pi/2
-times=2
+times=3
 # PWL: :LogarithmicIB, :ZigZag, :ZigZagInteger, :GeneralizedCelaya,
 # :SOS2, :Incremental, :CC, :DisaggLogarithmic, :MC, :DLog
 # PWR: :general, :BRGC, :balancedCode, :biclique
-pwl_method = :ZigZagInteger
+pwl_method = :biclique
 timeLimit = 60.0
 
 println("The number of points:", points, " The method: ", method, " the PWL/PWR Approach: ", pwl_method)

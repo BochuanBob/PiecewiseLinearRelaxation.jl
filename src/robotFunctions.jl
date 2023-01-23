@@ -63,8 +63,8 @@ function inverseKinematics2DNLP(arms::Vector{Float64},
     end
     absDiff = @variable(m, [1:3], lower_bound=0.0)
     @constraint(m, absDiff .>= [targetPosition[1], targetPosition[2], targetAngle]
-                            .- [xPos, yPos, cumTheta[aLen]])
-    @constraint(m, absDiff .>= [xPos, yPos, cumTheta[aLen]]
+                            .- [xPos, yPos, cumTheta[aLen] + initAngle])
+    @constraint(m, absDiff .>= [xPos, yPos, cumTheta[aLen] + initAngle]
                     .- [targetPosition[1], targetPosition[2], targetAngle])
     @objective(m, Min, absDiff[1] + absDiff[2] + beta * absDiff[3])
     optimize!(m)
@@ -94,7 +94,7 @@ function inverseKinematics2D(arms::Vector{Float64},
     cumAngleRanges = calculateRanges(angleRanges)
     m = direct_model(Gurobi.Optimizer())
     set_optimizer_attribute(m, "OutputFlag", 1)
-    set_optimizer_attribute(m, "PreCrush", 1)
+    # set_optimizer_attribute(m, "PreCrush", 1)
     set_optimizer_attribute(m, "Threads", 4)
     set_optimizer_attribute(m, "TimeLimit", timeLimit)
     theta = @variable(m, [1:aLen])
@@ -131,8 +131,8 @@ function inverseKinematics2D(arms::Vector{Float64},
     end
     absDiff = @variable(m, [1:3], lower_bound=0.0)
     @constraint(m, absDiff .>= [targetPosition[1], targetPosition[2], targetAngle]
-                            .- [xPos, yPos, cumTheta[aLen]])
-    @constraint(m, absDiff .>= [xPos, yPos, cumTheta[aLen]]
+                            .- [xPos, yPos, cumTheta[aLen] + initAngle])
+    @constraint(m, absDiff .>= [xPos, yPos, cumTheta[aLen] + initAngle]
                     .- [targetPosition[1], targetPosition[2], targetAngle])
     @objective(m, Min, absDiff[1] + absDiff[2] + beta * absDiff[3])
     optimize!(m)

@@ -3,11 +3,8 @@ using DataFrames
 using StatsBase
 
 
-const timeLimit = 600
-expName = "robot_results_3"
-
-# const timeLimit = 1800
-# expName = "shareOfChoice_results_2"
+const timeLimit = 1800
+expName = "shareOfChoice_results_2"
 fd = "../results/$(expName)/"
 folders = readdir("$(fd)")
 
@@ -18,9 +15,8 @@ for folder in folders
     folderName = string(fd, folder, "/")
 
     csvFiles = readdir("$(folderName)")
-    methodList = [:pwl, :pwlMerge, :pwr]
-    pwlMethods = Dict(:pwl=>[:Incremental, :CC, :MC, :Logarithmic, :ZigZag, :ZigZagInteger],
-                          :pwlMerge=>[:Incremental, :Logarithmic, :SOS2, :ZigZag, :ZigZagInteger],
+    methodList = [:pwlMerge, :pwr]
+    pwlMethods = Dict(:pwlMerge=>[:Incremental, :Logarithmic, :SOS2, :ZigZag, :ZigZagInteger],
                           :pwr=>[:BRGC, :balancedCode, :biclique])
 
     result = Dict()

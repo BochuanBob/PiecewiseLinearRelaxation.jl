@@ -39,9 +39,8 @@ function main()
 
 
     # :pwl, :pwr, :pwlMerge
-    methodList = [:pwl, :pwlMerge, :pwr]
-    pwlMethods = Dict(:pwl=>[:Incremental, :CC, :MC, :Logarithmic, :ZigZag, :ZigZagInteger],
-                      :pwlMerge=>[:Incremental, :Logarithmic, :SOS2, :ZigZag, :ZigZagInteger],
+    methodList = [:pwlMerge, :pwr]
+    pwlMethods = Dict(:pwlMerge=>[:Incremental, :Logarithmic, :SOS2, :ZigZag, :ZigZagInteger],
                       :pwr=>[:BRGC, :balancedCode, :biclique])
 
     for i in 1:samples

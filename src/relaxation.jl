@@ -8,7 +8,7 @@ function nonlinearRelaxation!(m::JuMP.Model, x::VarOrAff, z::VarOrAff,
     end
     xList = [lower + (i-1) * (upper - lower) / (points-1) for i = 1:points]
     for b in breaks
-        if !(b in xList)
+        if !(b in xList) && (b >= lower) && (b <= upper)
             append!(xList, b)
         end
     end
@@ -82,7 +82,7 @@ function getMultiIntersection(x1::Float64, x2::Float64, act::Function,
                         dAct::Function; times::Int64=1, check::Bool=false)
     xList = Vector{Float64}([])
     zList = Vector{Float64}([])
-    intersectionHelper!(x1, x2, xList, zList, act, dAct, times)
+    intersectionHelper!(x1, x2, xList, zList, act, dAct, times, x1, x2)
     if (check)
         @assert length(xList) == length(zList)
         if (length(xList) > 0)
@@ -96,8 +96,18 @@ end
 
 function intersectionHelper!(left::Float64, right::Float64,
             xList::Vector{Float64}, zList::Vector{Float64},
-            act::Function, dAct::Function, times::Int64; threshold::Float64=1e-8)
+            act::Function, dAct::Function, times::Int64,
+            x1::Float64, x2::Float64; threshold::Float64=1e-8)
     if abs(dAct(left) - dAct(right)) <= threshold
+        if (left != x1) && (left != x2) && !(left in xList)
+            append!(xList, left)
+            append!(zList, act(left))
+        end
+
+        if (right != x1) && (right != x2) && !(right in xList)
+            append!(xList, right)
+            append!(zList, act(right))
+        end
         return
     end
     xx, zz = getIntersection(left, act(left), dAct(left),
@@ -106,12 +116,35 @@ function intersectionHelper!(left::Float64, right::Float64,
         append!(xList, xx)
         append!(zList, zz)
     else
-        intersectionHelper!(left, xx, xList, zList, act, dAct, times-1)
-        append!(xList, xx)
-        append!(zList, act(xx))
-        intersectionHelper!(xx, right, xList, zList, act, dAct, times-1)
+        intersectionHelper!(left, xx, xList, zList, act, dAct, times-1, x1, x2)
+        # append!(xList, xx)
+        # append!(zList, act(xx))
+        intersectionHelper!(xx, right, xList, zList, act, dAct, times-1, x1, x2)
     end
     return
+end
+
+function removeLinear(xArr::Vector{Float64}, zArr::Vector{Float64}; threshold::Float64=1e-8)
+    if (length(xArr) == 0)
+        return Vector{Float64}([]), Vector{Float64}([])
+    end
+    xRes = Vector{Float64}([xArr[1]])
+    zRes = Vector{Float64}([zArr[1]])
+    if (length(xArr) == 0)
+        return xRes, zRes
+    end
+
+    for i in 2:(length(xArr)-1)
+        x1, x2, x3 = xArr[i-1], xArr[i], xArr[i+1]
+        z1, z2, z3 = zArr[i-1], zArr[i], zArr[i+1]
+        if abs((x1 - x2) * (z2 - z3) - (x2 - x3) * (z1 - z2)) > threshold * (x2 - x1) * (x3 - x2)
+            append!(xRes, x2)
+            append!(zRes, z2)
+        end
+    end
+    append!(xRes, xArr[length(xArr)])
+    append!(zRes, zArr[length(zArr)])
+    return xRes, zRes
 end
 
 function getLowUppPWL(xList::Vector{Float64}, act::Function, dAct::Function;
@@ -132,8 +165,11 @@ function getLowUppPWL(xList::Vector{Float64}, act::Function, dAct::Function;
     end
     p = sortperm(xLow);
     xLow = xLow[p]; zLow = zLow[p];
+    xLow, zLow = removeLinear(xLow, zLow)
+
     p = sortperm(xUpp);
     xUpp = xUpp[p]; zUpp = zUpp[p];
+    xUpp, zUpp = removeLinear(xUpp, zUpp)
 
     return xLow, zLow, xUpp, zUpp
 end

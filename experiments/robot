@@ -5,7 +5,7 @@
 # times: 2^times-1 is the number of extra extreme points in relaxations
 # samples: the number of random samples
 timeLimit=600;
-samples=5;
+samples=20;
 output=../results/robot_results_1/
 j=1
 while [ -d $output ]
@@ -16,9 +16,9 @@ done
 
 mkdir -p $output
 
-for points in 50 100 200 500
+for points in 50 100 200
     do
-    for times in 1 2 3
+    for times in 1 2 4
         do
         nohup julia robot.jl $points $times $samples $timeLimit $output >> ../results/out.txt;
     done

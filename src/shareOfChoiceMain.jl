@@ -25,13 +25,13 @@ Us = rand(Float64, v) * 10
 lambdas = rand(Float64, v)
 
 # :pwl, :pwr, :pwlMerge
-method = :pwlMerge
+method = :pwr
 points = 50
-times=3
+times=4
 # PWL: :LogarithmicIB, :ZigZag, :ZigZagInteger, :GeneralizedCelaya,
 # :SOS2, :Incremental, :CC, :DisaggLogarithmic, :MC, :DLog
 # PWR: :general, :BRGC, :balancedCode, :biclique
-pwl_method = :SOS2
+pwl_method = :biclique
 timeLimit = 1200.0
 
 println("The number of points:", points, " The method: ", method, " the PWL/PWR Approach: ", pwl_method)
