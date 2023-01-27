@@ -24,8 +24,33 @@ function nonlinearRelaxation!(m::JuMP.Model, x::VarOrAff, z::VarOrAff,
         @constraint(m, z <= zVarUpp)
     elseif (method == :pwr)
         xList, zList, SS = getPWR(xList, act, dAct, times=times)
+        if (pwl_method == :DLog) || (pwl_method == :Incremental)
+            getDisaggregatedPWR!(xList, zList, SS)
+            if (pwl_method == :DLog)
+                piecewiseLinearRelaxation!(m, x, z, xList, zList, SS, method=:BRGC)
+            else # pwl_method == :Incremental
+                lambda = @variable(m, [1:length(xList)], lower_bound=0.0)
 
-        piecewiseLinearRelaxation!(m, x, z, xList, zList, SS, method=pwl_method)
+                @constraint(m, sum(lambda) == 1)
+                @constraint(m, sum(lambda[i] * xList[i] for i in 1:length(xList)) == x)
+                @constraint(m, sum(lambda[i] * zList[i] for i in 1:length(zList)) == z)
+
+                sLen = length(SS) - 1
+                u = JuMP.@variable(m, [1:(sLen-1)], lower_bound=0, upper_bound=1)
+                y = @variable(m, [1:sLen], binary=true)
+                for i in 1:sLen
+                    @constraint(m, sum(lambda[j] for j in SS[i]) == y[i])
+                end
+                @constraint(m, y[1] == 1 - u[1])
+                for i in 1:(sLen-2)
+                    @constraint(m, u[i] >= u[i+1])
+                    @constraint(m, y[i+1] == u[i] - u[i+1])
+                end
+                @constraint(m, y[sLen] == u[sLen-1])
+            end
+        else
+            piecewiseLinearRelaxation!(m, x, z, xList, zList, SS, method=pwl_method)
+        end
     elseif (method == :pwlMerge)
         xLow, zLow, xUpp, zUpp = getLowUppPWL(xList, act, dAct, times=times)
         xUnion, zLowU, zUppU = unionLowUppPWL(xLow, zLow, xUpp, zUpp)
@@ -207,6 +232,23 @@ function unionLowUppPWL(xLow::Vector{Float64}, zLow::Vector{Float64},
         end
     end
     return xUnion, zLowUnion, zUppUnion
+end
+
+function getDisaggregatedPWR!(xList::Vector{Float64}, zList::Vector{Float64},
+                            SS::Vector{Set{Int64}})
+    sLen = length(SS)
+    count = length(xList) + 1
+    for i in 1:(sLen-1)
+        S = intersect(SS[i], SS[i+1])
+        setdiff!(SS[i+1], S)
+        union!(SS[i+1], Set(count:(count+length(S)-1)))
+        count += length(S)
+        for ele in S
+            append!(xList, xList[ele])
+            append!(zList, zList[ele])
+        end
+    end
+    return
 end
 
 function getPWR(xListOrg::Vector{Float64}, act::Function, dAct::Function;

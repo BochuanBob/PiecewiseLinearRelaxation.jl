@@ -36,5 +36,5 @@ timeLimit = 1200.0
 
 println("The number of points:", points, " The method: ", method, " the PWL/PWR Approach: ", pwl_method)
 
-shareOfChoise(lambdas, betas, Us, C, points=points, method=method, times=times,
+shareOfChoice(lambdas, betas, Us, C, points=points, method=method, times=times,
         pwl_method=pwl_method, timeLimit=timeLimit)

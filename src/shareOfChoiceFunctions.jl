@@ -1,16 +1,55 @@
-function shareOfChoise(lambdas::Vector{Float64}, betas::Array{Float64, 3},
-        Us::Vector{Float64}, C::Float64;
-        points::Int64=9, method=:pwl, times::Int64=1,
-        pwl_method=:Logarithmic, timeLimit::Float64=60.0)
+function shareOfChoiceNLP(lambdas::Vector{Float64}, betas::Array{Float64, 3},
+        Us::Vector{Float64}, C::Float64; timeLimit::Float64=60.0, threads::Int64=1)
     if (length(lambdas) != length(Us))
         error("The size of lambda is different from the size of U.")
     end
     v, S, eta = size(betas)
-    m = direct_model(Gurobi.Optimizer())
-    set_optimizer_attribute(m, "OutputFlag", 1)
-    # set_optimizer_attribute(m, "PreCrush", 1)
-    set_optimizer_attribute(m, "Threads", 4)
-    set_optimizer_attribute(m, "TimeLimit", timeLimit)
+    m = direct_model(SCIP.Optimizer(limits_time = timeLimit, limits_gap=1e-6,
+                    parallel_maxnthreads=threads, parallel_minnthreads=threads))
+
+    # MOI.set(m, MOI.RelativeGapTolerance(), 1e-6)
+    x = @variable(m, [1:eta], lower_bound=0.0, upper_bound=1.0)
+    muBar = @variable(m, [1:v])
+    mu = @variable(m, [1:v, 1:S])
+    pBar = @variable(m, [1:v])
+    p = @variable(m, [1:v, 1:S])
+    xLowB = [0.0 for i in 1:eta]
+    xUppB = [1.0 for i in 1:eta]
+    for i in 1:v
+        @NLconstraint(m, pBar[i] == 1 / (1 + exp(Us[i] - muBar[i])) )
+        for s in 1:S
+            @NLconstraint(m, p[i, s] == 1 / (1 + exp(Us[i] - mu[i, s])))
+        end
+    end
+    @constraint(m, [i=1:v], muBar[i] == (1 / S) * sum(betas[i, s, :]' * x for s in 1:S))
+    @constraint(m, [i=1:v, s=1:S], mu[i, s] == betas[i, s, :]' * x)
+    @constraint(m, [s=1:S], sum(lambdas[i] * p[i, s] for i in 1:v) >=
+                            C * sum(lambdas[i] * pBar[i] for i in 1:v))
+    @objective(m, Max, sum(lambdas .* pBar))
+    optimize!(m)
+    return m
+end
+
+function shareOfChoice(lambdas::Vector{Float64}, betas::Array{Float64, 3},
+        Us::Vector{Float64}, C::Float64;
+        points::Int64=9, method=:pwl, times::Int64=1,
+        pwl_method=:Logarithmic, timeLimit::Float64=60.0, threads::Int64=4, solver::String="gurobi")
+    if (length(lambdas) != length(Us))
+        error("The size of lambda is different from the size of U.")
+    end
+    v, S, eta = size(betas)
+    if (solver == "gurobi")
+        m = direct_model(Gurobi.Optimizer())
+        set_optimizer_attribute(m, "OutputFlag", 1)
+        # set_optimizer_attribute(m, "PreCrush", 1)
+        set_optimizer_attribute(m, "Threads", threads)
+        set_optimizer_attribute(m, "TimeLimit", timeLimit)
+        set_optimizer_attribute(m, "MIPGap", 1e-6)
+    else
+        m = direct_model(SCIP.Optimizer(limits_time = timeLimit, limits_gap=1e-6,
+                    parallel_maxnthreads=threads, parallel_minnthreads=threads))
+    end
+    # MOI.set(m, MOI.RelativeGapTolerance(), 1e-6)
 
     x = @variable(m, [1:eta], lower_bound=0.0, upper_bound=1.0)
     muBar = @variable(m, [1:v])

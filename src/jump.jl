@@ -58,6 +58,18 @@ function piecewiselinear2(m::JuMP.Model, x::VarOrAff, d, fd1, fd2; method=defaul
             JuMP.@constraint(m, δ[i+1] ≤ y[i])
             JuMP.@constraint(m, y[i] ≤ δ[i])
         end
+    elseif method in (:DisaggLogarithmic,:DLog)
+        γ = JuMP.@variable(m, [i=1:n,j=max(1,i-1):min(n-1,i)], lower_bound=0, upper_bound=1)
+        JuMP.@constraint(m, sum(γ) == 1)
+        JuMP.@constraint(m, γ[1,1]* d[1] + sum((γ[i,i-1]+γ[i,i])* d[i] for i in 2:n-1) + γ[n,n-1]* d[n] == x)
+        JuMP.@constraint(m, γ[1,1]*fd1[1] + sum((γ[i,i-1]+γ[i,i])*fd1[i] for i in 2:n-1) + γ[n,n-1]*fd1[n] == z1)
+        JuMP.@constraint(m, γ[1,1]*fd2[1] + sum((γ[i,i-1]+γ[i,i])*fd2[i] for i in 2:n-1) + γ[n,n-1]*fd2[n] == z2)
+        r = ceil(Int, log2(n-1))
+        H = reflected_gray_codes(r)
+        y = JuMP.@variable(m, [1:r], Bin)
+        for j in 1:r
+            JuMP.@constraint(m, sum((γ[i,i]+γ[i+1,i])*H[i][j] for i in 1:(n-1)) == y[j])
+        end
     else
         # V-formulation methods
         λ = JuMP.@variable(m, [1:n], lower_bound=0, upper_bound=1, base_name="λ_$counter")

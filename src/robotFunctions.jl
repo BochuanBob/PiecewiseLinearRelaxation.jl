@@ -27,7 +27,8 @@ end
 function inverseKinematics2DNLP(arms::Vector{Float64},
         angleRanges::Vector{Tuple{Float64, Float64}},
         targetPosition::Tuple{Float64, Float64}, targetAngle::Float64;
-        beta::Float64=0.0, timeLimit::Float64=60.0, initAngle::Float64=pi/2)
+        beta::Float64=0.0, timeLimit::Float64=60.0, initAngle::Float64=pi/2,
+        threads::Int64=1)
     if (length(angleRanges) == 0)
         error("The number of angles should be at least one.")
     end
@@ -38,7 +39,10 @@ function inverseKinematics2DNLP(arms::Vector{Float64},
     unitVec = [cos(initAngle) -sin(initAngle);
                  sin(initAngle) cos(initAngle)] * [1.0, 0.0]
     cumAngleRanges = calculateRanges(angleRanges)
-    m = direct_model(SCIP.Optimizer())
+    m = direct_model(SCIP.Optimizer(limits_time = timeLimit, limits_gap=1e-6,
+                parallel_maxnthreads=threads, parallel_minnthreads=threads))
+
+    # MOI.set(m, MOI.RelativeGapTolerance(), 1e-6)
     theta = @variable(m, [1:aLen])
 
     @constraint(m, [i=1:aLen], theta[i] >= angleRanges[i][1])
@@ -81,7 +85,8 @@ function inverseKinematics2D(arms::Vector{Float64},
         angleRanges::Vector{Tuple{Float64, Float64}},
         targetPosition::Tuple{Float64, Float64}, targetAngle::Float64;
         beta::Float64=0.0, points::Int64=9, method=:pwl, times::Int64=1,
-        pwl_method=:Logarithmic, timeLimit::Float64=60.0, initAngle::Float64=pi/2)
+        pwl_method=:Logarithmic, timeLimit::Float64=60.0,
+        initAngle::Float64=pi/2, threads::Int64=4, solver::String="gurobi")
     if (length(angleRanges) == 0)
         error("The number of angles should be at least one.")
     end
@@ -92,11 +97,19 @@ function inverseKinematics2D(arms::Vector{Float64},
     unitVec = [cos(initAngle) -sin(initAngle);
                  sin(initAngle) cos(initAngle)] * [1.0, 0.0]
     cumAngleRanges = calculateRanges(angleRanges)
-    m = direct_model(Gurobi.Optimizer())
-    set_optimizer_attribute(m, "OutputFlag", 1)
-    # set_optimizer_attribute(m, "PreCrush", 1)
-    set_optimizer_attribute(m, "Threads", 4)
-    set_optimizer_attribute(m, "TimeLimit", timeLimit)
+    if (solver == "gurobi")
+        m = direct_model(Gurobi.Optimizer())
+        set_optimizer_attribute(m, "OutputFlag", 1)
+        # set_optimizer_attribute(m, "PreCrush", 1)
+        set_optimizer_attribute(m, "Threads", threads)
+        set_optimizer_attribute(m, "TimeLimit", timeLimit)
+        set_optimizer_attribute(m, "MIPGap", 1e-6)
+    else
+        m = direct_model(SCIP.Optimizer(limits_time = timeLimit, limits_gap=1e-6,
+                        parallel_maxnthreads=threads, parallel_minnthreads=threads))
+    end
+
+    # MOI.set(m, MOI.RelativeGapTolerance(), 1e-6)
     theta = @variable(m, [1:aLen])
 
     @constraint(m, [i=1:aLen], theta[i] >= angleRanges[i][1])

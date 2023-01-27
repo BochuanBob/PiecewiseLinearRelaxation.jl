@@ -16,8 +16,8 @@ for folder in folders
 
     csvFiles = readdir("$(folderName)")
     methodList = [:pwlMerge, :pwr]
-    pwlMethods = Dict(:pwlMerge=>[:Incremental, :Logarithmic, :SOS2, :ZigZag, :ZigZagInteger],
-                          :pwr=>[:BRGC, :balancedCode, :biclique])
+    pwlMethods = Dict(:pwlMerge=>[:Incremental, :DLog, :Logarithmic, :SOS2, :ZigZag, :ZigZagInteger],
+                      :pwr=>[:DLog, :BRGC, :balancedCode, :biclique])
 
     result = Dict()
     for method in methodList

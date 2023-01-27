@@ -1,0 +1,14 @@
+#!/bin/bash
+timeLimit=600;
+samples=20;
+output=../results/shareOfChoiceNLP_results_1/
+j=1
+while [ -d $output ]
+    do
+    j=$(( $j + 1 ));
+    output=../results/shareOfChoiceNLP_results_$j/;
+done
+
+mkdir -p $output
+
+nohup julia shareOfChoiceNLP.jl $samples $timeLimit $output > ../results/out_share_NLP.txt &

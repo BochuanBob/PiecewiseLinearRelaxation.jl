@@ -2,11 +2,12 @@ using CSV
 using DataFrames
 using StatsBase
 
-
 methodList = ["pwl", "pwlMerge", "pwr"]
 pwlMethods = Dict("pwl"=>["Incremental", "CC", "MC", "Logarithmic", "ZigZag", "ZigZagInteger"],
-                  "pwlMerge"=>["Incremental", "Logarithmic", "SOS2", "ZigZag", "ZigZagInteger"],
-                  "pwr"=>["BRGC", "balancedCode", "biclique"])
+                  "pwlMerge"=>["Incremental", "DLog", "Logarithmic", "SOS2", "ZigZag", "ZigZagInteger"],
+                  "pwr"=>["Incremental", "DLog", "BRGC", "balancedCode", "biclique"])
+
+
 
 df = CSV.read(ARGS[1], DataFrame)
 
