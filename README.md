@@ -80,7 +80,7 @@ julia nlpAnalysis.jl shareOfChoiceNLP_results_1
 
 ## Acknowledgements
 
-`types.jl`, `jump.jl` and `PiecewiseLinearOpt.jl` are the modified code from [PiecewiseLinearOpt.jl](https://github.com/joehuchette/PiecewiseLinearOpt.jl), which is the code for the paper entitled [Nonconvex Piecewise Linear Functions: Advanced Formulations and Simple Modeling Tools]("https://pubsonline.informs.org/doi/abs/10.1287/opre.2019.1973").
+`types.jl`, `jump.jl` and `PiecewiseLinearOpt.jl` are the modified code from [PiecewiseLinearOpt.jl](https://github.com/joehuchette/PiecewiseLinearOpt.jl), which is the code for the paper entitled [Nonconvex Piecewise Linear Functions: Advanced Formulations and Simple Modeling Tools](https://pubsonline.informs.org/doi/abs/10.1287/opre.2019.1973).
 
 ***
 Copyright 2023 Bochuan Lyu, Illya V. Hicks, and Joey Huchette
