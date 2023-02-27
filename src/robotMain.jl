@@ -1,7 +1,6 @@
 using Pkg
 using Random
 using CSV
-using MAT
 using DataFrames
 using SparseArrays
 using JuMP, Gurobi, SCIP

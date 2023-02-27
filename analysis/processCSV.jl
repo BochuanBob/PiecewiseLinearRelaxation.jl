@@ -3,7 +3,7 @@ using DataFrames
 using StatsBase
 
 methodList = ["pwl", "pwlMerge", "pwr"]
-pwlMethods = Dict("pwl"=>["Incremental", "CC", "MC", "Logarithmic", "ZigZag", "ZigZagInteger"],
+pwlMethods = Dict("pwl"=>["Incremental", "CC", "MC", "DLog", "Logarithmic", "ZigZag", "ZigZagInteger"],
                   "pwlMerge"=>["Incremental", "DLog", "Logarithmic", "SOS2", "ZigZag", "ZigZagInteger"],
                   "pwr"=>["Incremental", "DLog", "BRGC", "balancedCode", "biclique"])
 

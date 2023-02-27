@@ -4,7 +4,9 @@ using StatsBase
 
 
 const timeLimit = 1800
-expName = "shareOfChoice_results_2"
+# expName = "shareOfChoice_results_10"
+expName = String(ARGS[1])
+
 fd = "../results/$(expName)/"
 folders = readdir("$(fd)")
 

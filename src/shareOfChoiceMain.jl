@@ -1,7 +1,6 @@
 using Pkg
 using Random
 using CSV
-using MAT
 using DataFrames
 using SparseArrays
 
@@ -23,6 +22,7 @@ Random.seed!(2022)
 betas = rand(Float64, (v, S, eta)) * 10 .- 5.0
 Us = rand(Float64, v) * 10
 lambdas = rand(Float64, v)
+lambdas = lambdas / sum(lambdas)
 
 # :pwl, :pwr, :pwlMerge
 method = :pwr

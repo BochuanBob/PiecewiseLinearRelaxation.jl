@@ -4,7 +4,6 @@ using CSV
 using StatsBase
 using DataFrames
 using SparseArrays
-using Dates
 using JuMP, Gurobi
 using Graphs
 
@@ -31,8 +30,7 @@ function main()
     times = parse(Int64, ARGS[2])
     i = parse(Int64, ARGS[3])
     timeLimit = parse(Float64, ARGS[4])
-
-    todayStr = Dates.format(Dates.today(), "yyyy_mm_dd")
+    
     j = 1
     isdir("../results") || mkdir("../results")
     folderName = String(ARGS[5])

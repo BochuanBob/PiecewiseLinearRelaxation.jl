@@ -6,7 +6,8 @@ using StatsBase
 const timeLimit = 600
 
 function main()
-    expName = "shareOfChoiceNLP_results_2"
+    # expName = "shareOfChoiceNLP_results_2"
+    expName = String(ARGS[1])
 
     fd = "../results/$(expName)/result/"
 

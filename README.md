@@ -1,4 +1,3 @@
-Copyright 2023 Bochuan Lyu, Illya V. Hicks, and Joey Huchette.
 # PiecewiseLinearRelaxation.jl
 
 Code for the paper "Building Formulations for Piecewise Linear Relaxations of Nonlinear Functions" by Bochuan Lyu, Illya V. Hicks, and Joey Huchette.
@@ -13,12 +12,10 @@ This code uses [Julia](https://julialang.org/), [JuMP](https://jump.dev/), and r
 using Pkg
 using Random
 using CSV
-using MAT
 using LinearAlgebra
 using StatsBase
 using DataFrames
 using SparseArrays
-using Dates
 using JuMP, Gurobi, SCIP
 using Graphs
 ```
@@ -49,14 +46,34 @@ Pkg.add(StatsBase)
 
 ## Running Computational Experiments
 
+In the folder of `experiments/`, run
+
 ```bash
-cd experiments/
 # Computational Results in Table 1
 ./robot
 # Computational Results in Table 2
 ./shareOfChoice
 # Computational Results in Table 3
-./shareOfChoise
+./shareOfChoiseNLP
+```
+
+## Running Analysis Code
+
+Assume that after running the computational experiments, the results in `results/` are in `robot_results_1/`, `shareOfChoice_results_1/`, and `shareOfChoiceNLP_results_1/`, then you can run the following code to get summary of the computational results.
+
+In the folder of `analysis/`, run
+
+```bash
+# 2D inverse kinematics
+julia analysis.jl robot_results_1
+julia processCSV.jl robot_results_1.csv
+
+# Share-of-choice
+julia shareAnalysis.jl shareOfChoice_results_1
+julia processCSV.jl shareOfChoice_results_1.csv
+
+# SCIP MINLP (original problem) vs. Gurobi MILP (relaxed problem)
+julia nlpAnalysis.jl shareOfChoiceNLP_results_1
 ```
 
 ***
@@ -64,3 +81,6 @@ cd experiments/
 ## Acknowledgements
 
 `types.jl`, `jump.jl` and `PiecewiseLinearOpt.jl` are the modified code from [PiecewiseLinearOpt.jl](https://github.com/joehuchette/PiecewiseLinearOpt.jl), which is the code for the paper ["Nonconvex Piecewise Linear Functions: Advanced Formulations and Simple Modeling Tools"]("https://pubsonline.informs.org/doi/abs/10.1287/opre.2019.1973").
+
+***
+Copyright 2023 Bochuan Lyu, Illya V. Hicks, and Joey Huchette.
