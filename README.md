@@ -78,6 +78,15 @@ julia nlpAnalysis.jl shareOfChoiceNLP_results_1
 
 ***
 
+## Citation
+
+@article{lyu2023building,
+  title={Building formulations for piecewise linear relaxations of nonlinear functions},
+  author={Lyu, Bochuan and Hicks, Illya V and Huchette, Joey},
+  journal={arXiv preprint arXiv:2304.14542},
+  year={2023}
+}
+
 ## Acknowledgements
 
 `types.jl`, `jump.jl` and `PiecewiseLinearOpt.jl` are the modified code from [PiecewiseLinearOpt.jl](https://github.com/joehuchette/PiecewiseLinearOpt.jl), which is the code for the paper entitled [Nonconvex Piecewise Linear Functions: Advanced Formulations and Simple Modeling Tools](https://pubsonline.informs.org/doi/abs/10.1287/opre.2019.1973).
