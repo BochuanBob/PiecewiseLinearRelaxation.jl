@@ -78,14 +78,16 @@ julia nlpAnalysis.jl shareOfChoiceNLP_results_1
 
 ***
 
-## Citation
+## Citing This Work
 
+```bibtex
 @article{lyu2023building,
   title={Building formulations for piecewise linear relaxations of nonlinear functions},
   author={Lyu, Bochuan and Hicks, Illya V and Huchette, Joey},
   journal={arXiv preprint arXiv:2304.14542},
   year={2023}
 }
+```
 
 ## Acknowledgements
 
